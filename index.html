@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>Food Dessert</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 4 References -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <!-- Link to FontAwesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="css/app.css">
+    <!-- Your custom JavaScript -->
+    <script src="js/app.js"></script>
+
+    <!-- Link to image for the favicon -->
+    <link rel="icon" href="images/food delivery.png">
+</head>
+
+<body>
+
+<!-- Top Navigation Bar -->
+
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+    <!-- Logo -->
+      <a class ="navbar-brand" href="index.html">
+          <img alt="TU Logo" src="images/food delivery.png" style="width:40px;">
+          &nbsp;&nbsp;Food Groceries System
+      </a>
+
+    <!-- Toggler Icon for responsiveness -->
+    <button id="toggle-icon" class="navbar-toggler secured" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <!--Menu sets on the left -->
+        <ul class="navbar-nav mr-auto">
+        </ul>
+    <!--Menu sets on the right -->
+    <!--Each individual item can be secured by adding the class: secured -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item secured">
+                <a id="link-list" class="nav-link" href="#div-list"><i class="fa fa-address-book"></i> Subscription/Addresses </a>
+            </li>
+            <li class="nav-item secured">
+                <a id="link-addaddress" class="nav-link" href="#div-addaddress"><i class="fa fa-link"></i> Add a Address </a>
+            </li>
+            <li class="nav-item secured">
+                <a id="link-addsub" class="nav-link" href="#div-addsub"><i class="fa fa-link"></i> Add A Subscription</a> 
+            </li>
+            <li class="nav-item secured">
+                <a id="link-history" class="nav-link" href="#div-history"><i class="fa fa-history"></i> Delivery History </a>
+            </li>
+            <li class="nav-item secured">
+                <a id="link-logout" class="nav-link" href="#"><i class="fa fa-sign-out"></i>Logout</a>
+            </li>
+        </ul>    
+    </div>
+</nav>
+
+<br><br><br><br>
+
+<!--Start container for BS4 (Bootstrap 4) formatting-->
+<div class="container-fluid">
+
+    <div class="row text-center">
+        <div class="col-md-12">
+			&nbsp; <!-- place holder for additional top row content -->
+        </div>
+    </div>
+
+    <div class="row">
+    <div class="col-md-2"></div>
+
+		<div class="col-md-8 content-wrapper " id="div-login" style="display: none;">
+                <form id='form-login'>
+				<label for="username">User name:</label>
+				<input type="text" name="username" id="username" class="form-control" >
+				<label for="password">Password:</label>
+                <input type="password" name="password" id="password" class="form-control" >
+                <br>
+				<div class="text-center">
+				<input type="button" value="Login" name="btnLogin" id="btnLogin" class="btn btn-primary" style="font-size:2em;width:100%;" >
+                </div>
+                <br>
+                <div id='login_message' class="">
+                </div>
+			</form>
+		</div>
+
+        <div class="col-md-8 content-wrapper " id="div-home" style="display: none;">
+			<div>
+                <h1 class="text-center"> Get a fresh full of groceries of food! </h1>
+                <br>
+    
+            <table id="images-list">
+            <tr>
+            <td><img src="images/veggie.jpg" alt="" style="width:300px; height:200px;"></td>
+             <td><img src="images/meat1.jpeg" alt="" style="width:300px;"></td>
+             <td><img src="images/gluten-free.png" alt="" style="width:300px; height:200px;"></td>
+             </tr>
+            </table>
+            <br>
+            <div class="text-center">
+				<input type ="button" value="Want to Subscribe?"  id="btnAddSub" class="btn btn-primary" style="font-size:2em;width:100%;" >
+                </div>
+                <br>
+            </div>
+		</div>
+    
+		<div class="col-md-8 content-wrapper " id="div-list" style="display: none;">
+			<div>
+                <h1> Subscription List </h1>
+                <table id="table-list" class="table table-bordered">
+                    <tr><th class="subscription-table">Name</th>
+                    <th class="subscription-table">Frequency</th>
+                    <th class="subscription-table">Food Selections</th>
+                    <th class="subscription-table">Duration</th>
+                    </tr>
+                    <tr>
+                    <td>Sava T</td>
+                    <td> Bi-weekly</td>
+                    <td>Veggie</td>
+                    <td>1 year</td> 
+                    </tr>
+                    </table>
+                    <div class="text-center">
+                        <input type ="button" value="Add Your Subscription"  id="btnAddSub1" class="btn btn-primary" style="font-size:2em;width:100%;" >
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <input type ="button" value="Update Current Subscription"  id="btnUpdateSub" class="btn btn-outline-success" style="font-size:2em;width:100%;" >
+                    </div>
+                    <br>
+                    <h1> Address List</h1>
+                    <table id="address-list" class="table table-bordered">
+                        <tr><th class="address-table">Addresses</th>
+                        <th class="address-table">Zip Code</th>
+                        <th class="address-table"> City</th>
+                        </tr>
+                        <td>6622 Curlew Place</td>
+                        <td> 19142</td>
+                        <td>Philadelphia</td>
+                    </table>
+                    <div class="text-center">
+                        <input type ="button" value="Add An Address"  id="btnAddAddress" class="btn btn-success" style="font-size:2em;width:100%;" >
+                        </div>
+                        <br>
+                    <div class="text-center">
+                            <input type ="button" value="Update Address"  id="btnUpdateAddress" class="btn btn-outline-primary" style="font-size:2em;width:100%;" >
+                    </div>   
+                    <br> 
+            </div>
+		</div>
+		
+		<div class="col-md-8 content-wrapper " id="div-addsub" style="display: none;">
+                <h1>Add Subscription</h1>
+                <form id="add-Sub">
+                    <label for="name">Name: </label><br>
+                    <input type="text" id="name" name="name" class="form-control">
+                    <label for="duration">Duration: </label><br>
+                    <input type="text" id="taskdescription" name="description" class="form-control">
+                    <br>
+                    <label for="food-selection">Food Selections</label>
+                    <select name = "food-selection" id="food-selection" class="form-control"> 
+                    <option value ="">Please choose between the food options</option> 
+                    <option value="V">Veggie</option>
+                    <option value="B">Beef</option>
+                    <option value="C">Chicken</option>
+                    <option value="P">Pork</option>
+                    </select> 
+                    <br>
+                    <input type="hidden" name="usertoken" id="usertoken" class="form-control">
+                    <br>
+                   <label for="food-status">Delivery Frequency</label>
+                   <select name="foodstatus" id="food-status" class="form-control">
+                   <option>How often do you want the delivery?</option>
+                   <option value="">Please choose the frequency of the time</option> 
+                   <option value="">Bi-weekly</option> 
+                   <option value="">Monthly</option> 
+                   </select>
+                   <br>
+                   <div class="text-center">
+                        <input type="button" value="Add Subscription"  id="btnAddSub2" class="btn btn-primary" style="font-size:2em;width:100%;" >
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <input type="button" value="Cancel" id="btnCancel2" class="btn btn-danger" style="font-size:2em;width:100%;">
+                    </div>
+                    <div id="message-addSub" class=""></div>
+                </form>       
+		</div>
+		
+		<div class="col-md-8 content-wrapper " id="div-addaddress" style="display: none;">
+            <h1> Add An Address </h1>
+            <form id ="form-addAddress">
+                <label for="street">Street of the Address:</label><br>
+                <input type="text" id="street" name="street" class="form-control">
+                <label for="city">City of the Address: </label>
+                <br>
+                <input type="text" id="city" name="city" class="form-control">
+                <br>
+                <label for="zip-code">Zip Code: </label>
+                <br>
+                <input type="text" id="zip-code" name="zip-code" class="form-control">
+                <br>
+                <input type="hidden" name="usertoken" id="usertoken" class="form-control">
+                <br><br>
+                <div class="text-center">
+				<input type="button" value="Add Address"  id="btnAddAddress2" class="btn btn-success" style="font-size:2em;width:100%;" >
+                </div>
+                <br>
+                <div class="text-center">
+                    <input type="button" value="Cancel"  id="btnCancel3" class="btn btn-danger" style="font-size:2em;width:100%;" >
+                    </div>    
+                    <div id="message-addTask" class=""></div> 
+                </form>
+		</div>
+
+        <div class="col-md-8 content-wrapper " id="div-history" style="display: none;">
+            <div>
+                <table id="table-history" class="table table-bordered">
+                    <tr class="bg-primary" style="color:white;"><th>My History</th></tr>
+                </table>
+            </div>
+		</div>
+
+    <div class="col-md-2"></div>
+    </div>
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div>
+            &nbsp;
+        </div>
+    </div>
+</div>
+
+</div> <!-- container //-->
+
+<br>
+    <div class="container-fluid bg-dark text-white">
+        <div class="row">
+            <div class="col-md-12 text-center">
+            &copy; 2022 MIS3502 - Savannah Tertulien and Benjamin Kaplan
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+				&nbsp; <!-- place holder for additional footer content -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
