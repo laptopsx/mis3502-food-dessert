@@ -12,6 +12,7 @@
     <!-- Link to FontAwesome -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Your custom CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis">
     <link rel="stylesheet" href="css/app.css">
     <!-- Your custom JavaScript -->
     <script src="js/app.js"></script>
@@ -94,7 +95,7 @@
 
         <div class="col-md-8 content-wrapper " id="div-home" style="display: none;">
 			<div>
-                <h1 class="text-center"> Get a fresh full of groceries of food! </h1>
+                <h1 class="home"> Get a fresh full of groceries of food! </h1>
                 <br>
     
             <table id="images-list">
@@ -109,6 +110,9 @@
 				<input type ="button" value="Want to Subscribe?"  id="btnAddSub" class="btn btn-primary" style="font-size:2em;width:100%;" >
                 </div>
                 <br>
+                <div class="text-center">
+                    <input type ="button" value="View Subscriptions"  id="btnViewSub" class="btn btn-primary" style="font-size:2em;width:100%;" >
+                    </div>
             </div>
 		</div>
     
@@ -129,11 +133,11 @@
                     </tr>
                     </table>
                     <div class="text-center">
-                        <input type ="button" value="Add Your Subscription"  id="btnAddSub1" class="btn btn-primary" style="font-size:2em;width:100%;" >
+                        <input type ="button" value="Update Subscription"  id="btnAddSub1" class="btn btn-primary" style="font-size:2em;width:100%;" >
                     </div>
                     <br>
                     <div class="text-center">
-                        <input type ="button" value="Update Current Subscription"  id="btnUpdateSub" class="btn btn-outline-success" style="font-size:2em;width:100%;" >
+                        <input type ="button" value="Cancel Subscription"  id="btnCancel2" class="btn btn-danger" style="font-size:2em;width:100%;" >
                     </div>
                     <br>
                     <h1> Address List</h1>
@@ -154,12 +158,14 @@
                             <input type ="button" value="Update Address"  id="btnUpdateAddress" class="btn btn-outline-primary" style="font-size:2em;width:100%;" >
                     </div>   
                     <br> 
+                    </form>
             </div>
 		</div>
 		
 		<div class="col-md-8 content-wrapper " id="div-addsub" style="display: none;">
                 <h1>Add Subscription</h1>
-                <form id="add-Sub">
+		<!--heres a form i made -->
+                <form id="form-add-Sub">
                     <label for="name">Name: </label><br>
                     <input type="text" id="name" name="name" class="form-control">
                     <label for="duration">Duration: </label><br>
@@ -189,7 +195,7 @@
                     </div>
                     <br>
                     <div class="text-center">
-                        <input type="button" value="Cancel" id="btnCancel2" class="btn btn-danger" style="font-size:2em;width:100%;">
+                        <input type ="button" value="Update Current Subscription"  id="btnUpdateSub" class="btn btn-outline-success" style="font-size:2em;width:100%;" >
                     </div>
                     <div id="message-addSub" class=""></div>
                 </form>       
