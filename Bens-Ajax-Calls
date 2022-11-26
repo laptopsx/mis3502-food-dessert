@@ -47,3 +47,27 @@ let updateSubscription = function(){
 		}
 	});
 }
+
+//Update Address
+let updateAddress = function(){
+
+	let the_serialized_data = $("#form-addAddress").serialize();
+	console.log(the_serialized_data);
+	$.ajax({
+		url : endpoint02 + '/address',
+		data : the_serialized_data,
+		method : 'PUT',
+		success : function(results){
+			console.log(results);
+			//Call the GET function I will work on soon
+
+			$(".content-wrapper").hide(); 	
+			$("#div-list").show(); 
+		},
+		error : function(data){
+			console.log("Something went wrong.")
+		}
+	});
+}
+
+
