@@ -23,5 +23,27 @@ let cancelSubscription = function(){
 		}
 	});
 }
+// Call supporting function under the cancel button click event
 
+// Update subscription SF
 
+let updateSubscription = function(){
+
+	let the_serialized_data = $("#add-sub").serialize();
+	console.log(the_serialized_data);
+	$.ajax({
+		url : endpoint02 + '/subscription',
+		data : the_serialized_data,
+		method : 'PUT',
+		success : function(results){
+			console.log(results);
+			//Call the GET function I will work on soon
+
+			$(".content-wrapper").hide(); 	
+			$("#div-list").show(); 
+		},
+		error : function(data){
+			console.log("Something went wrong.")
+		}
+	});
+}
