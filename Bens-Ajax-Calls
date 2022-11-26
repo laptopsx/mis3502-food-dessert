@@ -1,0 +1,23 @@
+//Cancel Subscription Supporting Function
+
+let cancelSubscription = function(){
+
+	let the_serialized_data = $('#form-play').serialize();
+  //form-play is incorrect... will need to be changed to whatever is called (only need usertoken here)
+  
+	console.log(the_serialized_data);
+
+	$.ajax({
+		url : endpoint02 + '/cancel',
+		data : the_serialized_data,
+		method : 'DELETE',
+		success : function(result){
+			//This where we would show the cancel DIV and put the message you already have 
+			console.log(result)
+			
+		},
+		error : function(data){
+			console.log(data)
+		}
+	});
+}
