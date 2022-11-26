@@ -70,4 +70,62 @@ let updateAddress = function(){
 	});
 }
 
+// GET Subscription SF
 
+let getSubscription = function(){
+
+	let the_serialized_data = $('#').serialize(); //This needs to be a usertoken - could you maybe add a hidden on the first page with the images of the food
+	console.log(the_serialized_data)
+	$.ajax({
+		url : endpoint02 + '/subscription',
+		data : the_serialized_data,
+		method : 'GET',
+		success : function(results){
+			console.log(results)
+			
+			for(let i = 0; i< results.length; i++){
+			
+				let txtRow ='<tr>';
+				txtRow = txtRow + '<td>' + results[i]['name']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['frequency']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['food']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['duration'] + '</td>';
+				txtRow = txtRow + '</tr>';
+				$('#table-list').append(txtRow);
+			}
+		},
+		error : function(data){
+			console.log(data)
+		}
+	});
+}
+
+// GET Address SF
+
+let getAddress = function(){
+
+	let the_serialized_data = $('#').serialize(); //This needs to be a usertoken - could you maybe add a hidden on the first page with the images of the food
+	console.log(the_serialized_data)
+	$.ajax({
+		url : endpoint02 + '/address',
+		data : the_serialized_data,
+		method : 'GET',
+		success : function(results){
+			console.log(results)
+			
+			for(let i = 0; i< results.length; i++){
+			
+				let txtRow ='<tr>';
+				txtRow = txtRow + '<td>' + results[i]['name']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['frequency']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['food']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['duration'] + '</td>';
+				txtRow = txtRow + '</tr>';
+				$('#address-list').append(txtRow);
+			}
+		},
+		error : function(data){
+			console.log(data)
+		}
+	});
+}
