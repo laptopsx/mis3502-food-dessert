@@ -37,7 +37,7 @@ let updateSubscription = function(){
 		method : 'PUT',
 		success : function(results){
 			console.log(results);
-			//Call the GET function I will work on soon
+			getSubscription();
 
 			$(".content-wrapper").hide(); 	
 			$("#div-list").show(); 
@@ -59,7 +59,7 @@ let updateAddress = function(){
 		method : 'PUT',
 		success : function(results){
 			console.log(results);
-			//Call the GET function I will work on soon
+			getAddress();
 
 			$(".content-wrapper").hide(); 	
 			$("#div-list").show(); 
