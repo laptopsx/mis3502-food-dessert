@@ -1,3 +1,5 @@
+// Need to update app.js so that endpoint02 = 'http://mis3502-bkaplan.com:8213
+
 //Cancel Subscription Supporting Function
 
 let cancelSubscription = function(){
@@ -21,3 +23,5 @@ let cancelSubscription = function(){
 		}
 	});
 }
+
+
