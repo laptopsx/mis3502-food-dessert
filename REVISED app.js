@@ -4,6 +4,14 @@
 let endpoint01 = "https://misdemo.temple.edu/auth";
 let endpoint02 = "http://mis3502-tertulien.com/8214";
 
+var iteration = 1;
+const queryString = window.location.search;
+console.log(queryString);
+
+const urlParams = new URLSearchParams(queryString);
+
+var usertoken = urlParams.get('usertoken')
+console.log(usertoken)
 /* SUPPORTING FUNCTIONS */
 
 let loginController = function(){
@@ -27,7 +35,7 @@ let loginController = function(){
 	//go get the data off the login form
 	let the_serialized_data = $('#form-login').serialize();
 	//the data I am sending
-	console.log(the_serialized_data);;
+	console.log(the_serialized_data);
 	$.ajax({
 		"url" : endpoint01,
 		"method" : "GET",
@@ -42,6 +50,7 @@ let loginController = function(){
 			} else {
 				//login succeeded.  Set usertoken.
 				localStorage.usertoken = result['user_id']; 
+				$("#usertoken").val(localStorage.usertoken) 
 				//console log the result ... a bad idea in prodcution
 				//but useful for teaching, learning and testing
 				console.log(result);
@@ -52,6 +61,7 @@ let loginController = function(){
 				$('.secured').addClass('unlocked');
 				$('#div-login').hide(); //hide the login page
 				$('#div-home').show();   //show the default page
+				
 			}			
 		},
 		"error" : function(data){
@@ -80,9 +90,10 @@ let getSubscription = function(){
 				txtRow = txtRow + '<td>' + results[i]['name']  + '</td>';
 				txtRow = txtRow + '<td>' + results[i]['frequency']  + '</td>';
 				txtRow = txtRow + '<td>' + results[i]['food']  + '</td>';
-				txtRow = txtRow + '<td>' + results[i]['duration'] + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['length'] + '</td>';
 				txtRow = txtRow + '</tr>';
 				$('#table-list').append(txtRow);
+				
 			}
 		},
 		error : function(data){
@@ -106,7 +117,7 @@ let getAddress = function(){
 				let txtRow ='<tr>';
 				txtRow = txtRow + '<td>' + results[i]['street']  + '</td>';
 				txtRow = txtRow + '<td>' + results[i]['city']  + '</td>';
-				txtRow = txtRow + '<td>' + results[i]['zip code']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['zipcode']  + '</td>';
 				txtRow = txtRow + '</tr>';
 				$('#address-list').append(txtRow);
 			}
@@ -117,8 +128,38 @@ let getAddress = function(){
 	});
 }
 let createUser = function(){
+	$("#message-addTask").html("");
+	$("#message-addTask").removeClass();
 	let the_serialized_data = $("#form-add-Sub").serialize();
 	console.log(the_serialized_data)
+	//client-side error trapping
+	let name = $("#name").val();
+	let duration = $("#duration").val();
+	let foodselection = $("#foodOption").val();
+	let frequency = $("#frequency").val();
+
+	if (name == "" || name.length < 3){
+		$('#message-addSub').html('Your name of at least three characters is required.');
+		$('#message-addSub').addClass("alert alert-danger text-center");
+		return; //quit the function now!  Get outta town!  Stop. 
+	}
+	if (duration == "" || duration.length < 3){
+		$('#message-addSub').html('Please enter the amount of how long you want to subscribe');
+		$('#message-addSub').addClass("alert alert-danger text-center");
+		return; //quit the function now!  Get outta town!  Stop. 
+	}
+	if (foodselection == "") {
+		$('#message-addSub').addClass("alert alert-danger text-center");
+		$('#message-addSub').html('Please pick the food you want.');
+		return; // Quit
+	}
+
+	if (frequency == "") {
+		$('#message-addSub').addClass("alert alert-danger text-center");
+		$('#message-addSub').html('Please pick the frequency of how much you want this to occur to your delivery');
+		return; // Quit
+	}
+	
 	$.ajax({
 		url: endpoint02 + '/users',
 		data: the_serialized_data,
@@ -126,7 +167,7 @@ let createUser = function(){
 		success: function(results){
 			console.log(results)
 			getSubscription();
-			$("#content-wrapper").hide();
+			$(".content-wrapper").hide();
 			$("#div-list").show();
 
 		},
@@ -135,6 +176,68 @@ let createUser = function(){
 		}
 	})
 
+}
+let createAddress = function(){
+	let the_serialized_data = $("#form-addAddress").serialize();
+	console.log(the_serialized_data)
+	$.ajax({
+		url: endpoint02 + '/address',
+		data: the_serialized_data,
+		method: 'POST',
+		success: function(results){
+			console.log(results)
+			getAddress();
+			$(".content-wrapper").hide();
+			$("#div-list").show();
+
+		},
+		error:function(data){
+			console.log("Something went wrong.")
+		}
+	})
+}
+
+let updateAddress = function(){
+
+	let the_serialized_data = $("#form-addAddress").serialize();
+	console.log(the_serialized_data);
+	$.ajax({
+		url : endpoint02 + '/address',
+		data : the_serialized_data,
+		method : 'PUT',
+		success : function(results){
+			console.log(results);
+			getAddress();
+
+			$(".content-wrapper").hide(); 	
+			$("#div-list").show(); 
+		},
+		error : function(data){
+			console.log("Something went wrong.")
+		}
+	});
+}
+
+let cancelSubscription = function(){
+
+	let the_serialized_data = $('#form-add-Sub').serialize();
+  //form-play is incorrect... will need to be changed to whatever is called (only need usertoken here)
+  
+	console.log(the_serialized_data);
+
+	$.ajax({
+		url : endpoint02 + '/cancel',
+		data : the_serialized_data,
+		method : 'DELETE',
+		success : function(result){
+			//This where we would show the cancel DIV and put the message you already have 
+			console.log(result)
+			
+		},
+		error : function(data){
+			console.log(data)
+		}
+	});
 }
 
 /*
@@ -201,6 +304,7 @@ $(document).ready(function (){
 		$("#div-home").show()
 		$(".secured").removeClass("locked");		
 		$(".secured").addClass("unlocked");
+		$("#usertoken").val(localStorage.usertoken)
 	}
 	else {
 		$("#div-login").show();
@@ -224,6 +328,7 @@ $(document).ready(function (){
 		$("#div-addsub").show();
 	});
 	$("#btnCancel2").click(function(){
+		cancelSubscription();
 		// First ... remove usertoken from localstorage
 		localStorage.removeItem("usertoken");
 		// Now force the page to refresh
@@ -243,8 +348,7 @@ $(document).ready(function (){
 	});
 	$("#btnAddAddress2").click(function(){
 		//make a function and put the list on there
-		$(".content-wrapper").hide();
-		$("#div-list").show();
+		createAddress();
 	});
 	$("#btnViewSub").click(function(){
 		$(".content-wrapper").hide();
@@ -256,9 +360,10 @@ $(document).ready(function (){
 	});
 	$('#link-list').click(function(){
 		$(".content-wrapper").hide();
-		$("#div-list").show()
+		$("#div-list").show();
 		getSubscription();
 		getAddress();
+		
 	});
 	/* what happens if the link-BBB anchor tag is clicked? */
 	$('#link-history').click(function(){
@@ -273,6 +378,7 @@ $(document).ready(function (){
 		$(".content-wrapper").hide(); 	
 		$("#div-addsub").show(); 
 	});
+	$('.carousel').carousel()
 
 	/* what happens if any of the navigation links are clicked? */
 	$('.nav-link').click(function(){
