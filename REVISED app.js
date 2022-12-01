@@ -61,7 +61,9 @@ let loginController = function(){
 				$('.secured').addClass('unlocked');
 				$('#div-login').hide(); //hide the login page
 				$('#div-home').show();   //show the default page
-				
+				$("#div-mymap").hide();
+				$("#div-stuff").hide();
+				$(".navbar-nav").hide();
 			}			
 		},
 		"error" : function(data){
@@ -93,7 +95,7 @@ let getSubscription = function(){
 				txtRow = txtRow + '<td>' + results[i]['length'] + '</td>';
 				txtRow = txtRow + '</tr>';
 				$('#table-list').append(txtRow);
-				
+				$(".navbar-nav").show();
 			}
 		},
 		error : function(data){
@@ -116,10 +118,12 @@ let getAddress = function(){
 			
 				let txtRow ='<tr>';
 				txtRow = txtRow + '<td>' + results[i]['street']  + '</td>';
-				txtRow = txtRow + '<td>' + results[i]['city']  + '</td>';
+				txtRow = txtRow + '<td>' + results[i]['city']  + '<input onclick="getMyCurrentLocation(' + results[i]["#div-mymap"] + ')" type="button" id="map-button" value="Map" class="btn btn-default float-right" style="background-color:gray" >';
 				txtRow = txtRow + '<td>' + results[i]['zipcode']  + '</td>';
 				txtRow = txtRow + '</tr>';
 				$('#address-list').append(txtRow);
+				$(".navbar-nav").show();
+				$(".container").show();
 			}
 		},
 		error : function(data){
@@ -169,7 +173,7 @@ let createUser = function(){
 			getSubscription();
 			$(".content-wrapper").hide();
 			$("#div-list").show();
-
+			$(".navbar-nav").show();
 		},
 		error:function(data){
 			console.log("Something went wrong.")
@@ -180,6 +184,7 @@ let createUser = function(){
 let createAddress = function(){
 	let the_serialized_data = $("#form-addAddress").serialize();
 	console.log(the_serialized_data)
+	
 	$.ajax({
 		url: endpoint02 + '/address',
 		data: the_serialized_data,
@@ -189,7 +194,7 @@ let createAddress = function(){
 			getAddress();
 			$(".content-wrapper").hide();
 			$("#div-list").show();
-
+			$(".navbar-nav").show();
 		},
 		error:function(data){
 			console.log("Something went wrong.")
@@ -211,6 +216,7 @@ let updateAddress = function(){
 
 			$(".content-wrapper").hide(); 	
 			$("#div-list").show(); 
+			$(".navbar-nav").show();
 		},
 		error : function(data){
 			console.log("Something went wrong.")
@@ -218,6 +224,25 @@ let updateAddress = function(){
 	});
 }
 
+
+let updateSubscription = function(){
+	let the_serialized_data = $("#form-add-Sub").serialize();
+	console.log(the_serialized_data);
+	$.ajax({
+		url : endpoint02 + '/subscription',
+		data : the_serialized_data,
+		method : 'PUT',
+		success : function(results){
+			console.log(results);
+			createUser();
+			$(".content-wrapper").hide(); 	
+			$("#div-list").show(); 
+		},
+		error : function(data){
+			console.log("Something went wrong.")
+		}
+	});
+}
 let cancelSubscription = function(){
 
 	let the_serialized_data = $('#form-add-Sub').serialize();
@@ -239,8 +264,77 @@ let cancelSubscription = function(){
 		}
 	});
 }
+//previous api code 
+/*
+
+
+let validateAddress = function(){
+	let key = '144557245378381511'
+	let street = $('#street').val();
+	let street2 = ''
+	let city = $('#city').val();
+	let state = $('#state').val(); //Will need to add state to client and server side code 
+	let zipcode = $('#zipcode').val();
+	
+	  let the_serialized_data ='street=' + street + '&street2=' + street2 + '&city=' + city + '&state=' + state + '&zipcode=' + zipcode + '&address-type=us-street-components';
+	  console.log(the_serialized_data)
+	
+		$.ajax({
+			url : 'https://misdemo.temple.edu/corsfix',
+			data : {the_serialized_data, "key": key },
+			method : 'GET',
+			success : function(results){
+			  console.log(results);
+			  
+			  //Need to 
+			  
+			  // This may be incorrect ... results[0]['enhanced_match']
+			  
+			  if (results[0]['enhanced_match'] != 'postal-match'){
+				   // Show a message to client that address is invalid and stop the process
+				   $('#message-addSub').html("This is an invalid address. Please enter a real address in order to deliver the food products.")
+				   $("#message-addSub").addClass("alert alert-danger text-center")
+				return;
+			  }
+			  
+			  if (results[0]['enhanced_match'] == 'postal-match'){
+				//Not sure if we need this -- just need it to move to the next function
+				 
+			  }
+			},
+			error : function(data){
+			  console.log("Something went wrong.")
+			  // Show a message to the client that is invalid and stop the process
+			}
+		  });
+	}
+	*/
+//My API Code
+const myAPIKey = "RZzneSw5Vm5SDiA9SZxbozcYNGssF8GT";
+
+let getMyCurrentLocation = function(){
+	navigator.geolocation.getCurrentPosition(getTheInteractiveMap);
+}
+
+let getTheInteractiveMap = function(position){
+	console.log( 39.916962, -75.2272)
+	L.mapquest.key = myAPIKey;
+
+// 'map' refers to a <div> element with the ID map
+	var tertulienmap = L.mapquest.map('mymap', {
+  	center: [39.916962, -75.2272],
+  	layers: L.mapquest.tileLayer('map'),
+    zoom: 12
+});
+	tertulienmap.addControl(L.mapquest.control());
+}
+$(document).ready(function(){
+	getMyCurrentLocation
+
+})
 
 /*
+
 //the old Login Controller ... it used the getJSON method 
 let loginController = function(){
 	//clear any previous messages
@@ -302,6 +396,7 @@ $(document).ready(function (){
     /* this reveals the default page */
 	if (localStorage.usertoken){
 		$("#div-home").show()
+		$(".content").hide();
 		$(".secured").removeClass("locked");		
 		$(".secured").addClass("unlocked");
 		$("#usertoken").val(localStorage.usertoken)
@@ -324,8 +419,7 @@ $(document).ready(function (){
 		$("#btnUpdateSub").hide();
 	});
 	$('#btnAddSub1').click(function(){
-		$('.content-wrapper').hide();
-		$("#div-addsub").show();
+		updateSubscription();
 	});
 	$("#btnCancel2").click(function(){
 		cancelSubscription();
@@ -350,6 +444,10 @@ $(document).ready(function (){
 		//make a function and put the list on there
 		createAddress();
 	});
+
+	$("#btnUpdateAddress").click(function(){
+		updateAddress();
+	})
 	$("#btnViewSub").click(function(){
 		$(".content-wrapper").hide();
 		$("#div-list").show();
@@ -365,6 +463,11 @@ $(document).ready(function (){
 		getAddress();
 		
 	});
+	$("#map-button").click(function(){
+		$(".content-wrapper").hide();
+		$("#div-stuff").show();
+	});
+	
 	/* what happens if the link-BBB anchor tag is clicked? */
 	$('#link-history').click(function(){
 		//make a function first
@@ -372,6 +475,7 @@ $(document).ready(function (){
 		$("#div-history").show(); 
 	});
 
+	
 	/* what happens if the link-CCC anchor tag is clicked? */
 	$('#link-addsub').click(function(){
 		//make a function first
