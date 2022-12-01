@@ -1,0 +1,40 @@
+let updateSubscription = function(){
+	let the_serialized_data = $("#form-add-Sub").serialize();
+	console.log(the_serialized_data);
+	$.ajax({
+		url : endpoint02 + '/subscription',
+		data : the_serialized_data,
+		method : 'PUT',
+		success : function(results){
+			console.log(results);
+			createUser();
+			$(".content-wrapper").hide(); 	
+			$("#div-list").show(); 
+		},
+		error : function(data){
+			console.log("Something went wrong.")
+		}
+	});
+}
+
+let updateAddress = function(){
+
+	let the_serialized_data = $("#form-addAddress").serialize();
+	console.log(the_serialized_data);
+	$.ajax({
+		url : endpoint02 + '/address',
+		data : the_serialized_data,
+		method : 'PUT',
+		success : function(results){
+			console.log(results);
+			getAddress();
+
+			$(".content-wrapper").hide(); 	
+			$("#div-list").show(); 
+			$(".navbar-nav").show();
+		},
+		error : function(data){
+			console.log("Something went wrong.")
+		}
+	});
+}
