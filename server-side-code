@@ -1,0 +1,501 @@
+let express = require('express'); //import express, because I want easier management of GET and POST requests.  
+//let fs = require('fs');  //fs is used to manipulate the file system
+let MySql = require('sync-mysql');  //MySql is used to manipulate a database connection
+"use strict";
+
+//set up the database connection 
+const options = {
+    user: 'mis129',
+    password: '423833',
+    database: 'mis129mercury',
+    host: 'dataanalytics.temple.edu'
+};
+
+// create the database connection
+const connection = new MySql(options);
+
+let app = express();  //the express method returns an instance of a app object
+app.use(express.urlencoded({extended:false}));  //use this because incoming data is urlencoded
+
+app.use(function(req, res, next) {
+    express.urlencoded({extended:false})
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+    next();  //go process the next matching condition
+  });
+
+//supporting functions *******************************************************************
+
+let createUser = function(res,usertoken,name,frequency,duration,foodOption){
+    try{
+        let txtSQL = 'INSERT INTO subscription (name,frequency, length, usertoken,food) VALUES (?,?,?,?,?)';
+        let result = connection.query(txtSQL,[name,frequency,duration,usertoken,foodOption]);
+        responseWrite(res,result,200);
+        return;
+    }
+    catch(e){
+        console.log(e);
+        responseWrite(res,"Unexpected error (createUser) ",500);
+    }
+}
+
+let createAddress = function(res,usertoken,street,city,state, zipcode){
+    try{
+        let txtSQL = 'INSERT INTO address (usertoken,street,city,state, zipcode) VALUES (?,?,?,?,?)';
+        let result = connection.query(txtSQL,[usertoken,street,city,state, zipcode]);
+        responseWrite(res,result,200);
+        return;
+    }
+    catch(e){
+        console.log(e);
+        responseWrite(res,"Unexpected error (createAddress) ",500);
+    }
+}
+
+
+
+let getSubscription = function(res,usertoken){
+
+        try{
+            let txtSQL = 'SELECT * FROM subscription WHERE usertoken = ? AND canceled = "N" ';
+            let result = connection.query(txtSQL,[usertoken]);
+            responseWrite(res,result,200);
+            return;
+        }
+       catch(e){
+            console.log(e);
+            responseWrite(res,"Unexpected error (getSubscription) ",500);
+       }
+}
+
+let getAddress = function(res,usertoken){
+
+    try{
+        let txtSQL = 'SELECT * FROM address WHERE usertoken = ? AND canceled = "N" ';
+        let result = connection.query(txtSQL,[usertoken]);
+        responseWrite(res,result,200);
+        return;
+    }
+   catch(e){
+        console.log(e);
+        responseWrite(res,"Unexpected error (getAddress) ",500);
+   }
+}
+
+let getDeliveries = function(res,usertoken){
+
+    try{
+        let txtSQL = 'SELECT * FROM deliveries WHERE usertoken = ?';
+        let result = connection.query(txtSQL,[usertoken]);
+        responseWrite(res,result,200);
+        return;
+    }
+   catch(e){
+        console.log(e);
+        responseWrite(res,"Unexpected error (getDeliveries) ",500);
+   }
+}
+
+let updateSubscription = function(res,name,usertoken,frequency,duration,foodOption){
+    try{
+         let txtSQL = 'update subscription set name = ?, frequency = ?, length = ?, food = ?  where usertoken = ?';
+         let result = connection.query(txtSQL,[name,frequency,duration,foodOption,usertoken]);
+         responseWrite(res,usertoken,200);
+         return;
+    }
+    catch(e){
+     console.log(e);
+     responseWrite(res,"Unexpected error (updateSubscription) ",500);
+    }
+     
+ }
+
+ let updateAddress = function(res,usertoken,street,city,state, zipcode){
+    try{
+        let txtSQL = 'update address set street = ?, city = ?, state = ?, zipcode = ? where usertoken = ?';
+        let result = connection.query(txtSQL,[street,city,state,zipcode,usertoken]);
+        responseWrite(res, usertoken ,200);
+        return;
+   }
+   catch(e){
+    console.log(e);
+    responseWrite(res,"Unexpected error (updateAddress) ",500);
+   }
+ }
+
+ let cancelSubscription = function(res,usertoken){
+
+    let txtSQL1 = 'DELETE from subscription where usertoken = ?'
+    let txtSQL2 = 'DELETE from address where usertoken = ?'
+
+    try{
+        let result1 = connection.query(txtSQL1,[usertoken]);  
+        let result2 = connection.query(txtSQL2,[usertoken]);    
+    }
+    catch(e){
+        console.log(e);
+        responseWrite(res,"Unexpected error (deleteGame) ",500);
+        return;
+    }
+    responseWrite(res,"Success",200);
+}
+
+let cancelAddress = function(res,address_id,canceled){
+    //code goes here
+    try{
+        let txtSQL="update address set canceled = ? where address_id = ?"
+        let results = connection.query(txtSQL,[canceled,address_id]);
+        responseWrite(res, results,200);
+        }
+        catch(e){
+            responseWrite(res,"Unexpected error",500);
+        }
+};
+
+let detailAddress = function(res, address_id){
+    try{
+    let txtSQL ="select * from address where canceled = 'N' and address_id = ?"
+    console.log(txtSQL)
+    let results = connection.query(txtSQL,[address_id]);
+    responseWrite(res, results, 200);
+    }
+    catch(e){
+        responseWrite(res,'Error', 500);
+    }
+}
+
+
+//responseWrite is a supporting function.  It sends 
+// output to the API consumer and ends the response.
+// This is hard-coded to always send a json response.
+let responseWrite = function(res,Output,responseStatus){
+    res.writeHead(responseStatus, {'Content-Type': 'application/json'});
+    res.write(JSON.stringify(Output));
+    res.end();
+};
+
+//error trapping ************************************************************************
+
+
+//Creates a user with subscription and address
+app.post('/users',function(req,res,next){
+    let usertoken = req.body.usertoken;
+    let name = req.body.name;
+    let frequency = req.body.frequency;
+    let duration = req.body.duration;
+    let foodOption = req.body.foodOption;
+    //food option 
+
+
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+
+    if (name == undefined || name == ''){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+
+    if (frequency == undefined || frequency == ''){
+        responseWrite(res,"Frequency of delivery is missing or incorrect.",400);
+        return;
+    }
+
+    if (duration == undefined || duration == ''){
+        responseWrite(res,"duration of subscription is missing or incorrect.",400);
+        return;
+    }
+
+    if (foodOption == undefined || foodOption == ''){
+        responseWrite(res,"food option of subscription is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+});
+
+
+
+//post address
+app.post('/address',function(req,res,next){
+    let usertoken = req.body.usertoken;
+    let street = req.body.street;
+    let city = req.body.city;
+    let state = req.body.state;
+    let zipcode = req.body.zipcode;
+
+
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+
+    if (street == undefined || street == ''){
+        responseWrite(res,"Street address is missing or incorrect.",400);
+        return;
+    }
+
+    if (city == undefined || city == ''){
+        responseWrite(res,"City is missing or incorrect.",400);
+        return;
+    }
+    if(state == undefined || state == ''){
+        responseWrite(res, "State is missing or incorrect", 400);
+    }
+
+    if (zipcode == undefined || zipcode == '' || zipcode.length != 5){
+        responseWrite(res,"Zipcode is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+});
+
+
+//Returns a specific users subscription 
+app.get('/subscription',function(req,res,next){
+    let usertoken = req.query.usertoken;
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+})
+
+//Returns address
+app.get('/address',function(req,res,next){
+    let usertoken = req.query.usertoken;
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+})
+
+//Returns a users history 
+app.get('/deliveries',function(req,res,next){
+    let usertoken = req.query.usertoken;
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+})
+
+//Updates user's subscription
+app.put('/subscription',function(req,res,next){
+    let usertoken = req.body.usertoken;
+    let name = req.body.name;
+    let frequency = req.body.frequency;
+    let duration = req.body.duration;
+    let foodOption = req.body.foodOption;
+    //food option 
+
+
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+
+    if (name == undefined || name == ''){
+        responseWrite(res,"name is missing or incorrect.",400);
+        return;
+    }
+
+    if (frequency == undefined || frequency == ''){
+        responseWrite(res,"Frequency of delivery is missing or incorrect.",400);
+        return;
+    }
+
+    if (duration == undefined || duration == ''){
+        responseWrite(res,"duration of subscription is missing or incorrect.",400);
+        return;
+    }
+
+    if (foodOption == undefined || foodOption == ''){
+        responseWrite(res,"food option of subscription is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+});
+
+//Update Address
+app.put('/address',function(req,res,next){
+    let usertoken = req.body.usertoken;
+    let street = req.body.street;
+    let city = req.body.city;
+    let state = req.body.state;
+    let zipcode = req.body.zipcode;
+
+
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+
+    if (street == undefined || street == ''){
+        responseWrite(res,"Street address is missing or incorrect.",400);
+        return;
+    }
+
+    if (city == undefined || city == ''){
+        responseWrite(res,"City is missing or incorrect.",400);
+        return;
+    }
+    if(state== undefined || state == ''){
+        responseWrite(res, "State is missing or incorrect.", 400);
+    }
+
+    if (zipcode == undefined || zipcode == '' || zipcode.length != 5){
+        responseWrite(res,"Zipcode is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+});
+
+app.delete('/cancel',function(req,res,next){
+    let usertoken = req.body.usertoken;
+  
+    if (usertoken == undefined || usertoken == '' || isNaN(usertoken)){
+        responseWrite(res,"usertoken is missing or incorrect.",400);
+        return;
+    }
+    
+    next();
+});
+//this is another PUT because our other ones arent working well
+app.put('/cancel',function(req,res,next){
+    let address_id = req.body.address_id
+    let canceled = req.body.canceled;
+
+    //check for problems
+    if(address_id == undefined || address_id == ""|| isNaN(address_id)){
+        responseWrite(res,"The address_id was missing or incorrect." ,400);
+        return; //stop !
+    }
+    if(canceled == undefined || canceled == ""){
+        responseWrite(res, "The cancel was missing or incorrect." ,400)
+        return; //stop  !
+    }
+    if(canceled !="Y" && canceled !="N"){
+        responseWrite(res, "The cancel was missing or incorrect." ,400)
+        return; //stop !
+    }
+    else{
+        next(); //go find the next matching event handler
+    }
+})
+//another GET 
+app.get('/detailaddress', function(req,res,next){
+    //code goes here
+    let address_id = req.query.address_id;
+
+    //check for problems
+    if(address_id== undefined || address_id =="" || isNaN(address_id)){
+        responseWrite(res, "The address id of the task was missing or incorrect", 400)
+        return
+    }
+    else{
+    next();
+    }
+});
+
+
+//event handlers ************************************************************************
+app.post('/users',function(req,res){
+    let usertoken = req.body.usertoken;
+    let name = req.body.name;
+    let frequency = req.body.frequency;
+    let duration = req.body.duration;
+    let foodOption = req.body.foodOption;
+    createUser(res,usertoken,name,frequency,duration,foodOption)
+});
+
+app.post('/address',function(req,res,){
+    let usertoken = req.body.usertoken;
+    let street = req.body.street;
+    let city = req.body.city;
+    let state = req.body.state;
+    let zipcode = req.body.zipcode;
+    createAddress(res,usertoken,street,city,state,zipcode)
+});
+
+app.get('/subscription',function(req,res){
+    let usertoken = req.query.usertoken;
+    getSubscription(res,usertoken);
+});
+
+app.get('/address',function(req,res){
+    let usertoken = req.query.usertoken;
+    getAddress(res,usertoken);
+});
+
+app.get('/deliveries',function(req,res){
+    let usertoken = req.query.usertoken;
+    getDeliveries(res,usertoken);
+});
+
+app.put('/subscription',function(req,res){
+    let name = req.body.name;
+    let usertoken = req.body.usertoken
+    let frequency = req.body.frequency;
+    let duration = req.body.duration;
+    let foodOption = req.body.foodOption;
+    updateSubscription(res,usertoken, name,frequency,duration,foodOption)
+});
+
+
+app.put('/address',function(req,res,){
+    let usertoken = req.body.usertoken;
+    let street = req.body.street;
+    let city = req.body.city;
+    let state = req.body.state
+    let zipcode = req.body.zipcode;
+    updateAddress(res,usertoken,street,city,state,zipcode)
+});
+app.put('/cancel', function(req,res){
+    let address_id = req.body.address_id
+    let canceled = req.body.canceled
+    cancelAddress(res, address_id, canceled)
+})
+app.delete('/cancel',function(req,res){
+    let usertoken = req.body.usertoken;
+    
+
+   cancelSubscription(res,usertoken)
+});
+app.get('/detailaddress',function(req,res){
+    let address_id = req.query.address_id
+    detailAddress(res, address_id);
+});
+//what the app should do when it received a "GET" against the root
+app.get('/', function(req, res) {
+    //what to do if request has no route ... show instructions
+    let message = [];
+    
+    message[message.length] = "Feature 1: Issue a POST against ./users with usertoken to create a new subscription. When the POST is successful, a JSON object representing the new user is returned.";
+    message[message.length] = "Feature 2: Issue a GET aginst ./users with usertoken to return a specific users subscription choices and address. ";
+    message[message.length] = "Feature 3: Issue a PUT against ./subscription to either update a specific users subscription or address. ";
+    message[message.length] = "Feature 4: Issue a GET against ./Delivery to return all of the delivery history for a specific user. The results will be returned in a JSON array.";
+
+	responseWrite(res,message,200);
+    return
+});
+  
+//This piece of code creates the server  
+//and listens for requests on a specific port
+//we are also generating a message once the 
+//server is created
+let server = app.listen(8214, "0.0.0.0" ,function(){
+    let host = server.address().address;
+    let port = server.address().port;
+    console.log("The endpoint server is listening on port:" + port);
+});
+
